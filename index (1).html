@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dev Toolbox</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧰</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1c1f4a;--lilac:#ebe6ff;--orange:#ff7a1a;--mint:#7be0c3;--paper:#fff;--err:#a3220a;
+--d:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif;--m:"Space Mono",ui-monospace,Menlo,Consolas,monospace}
+*{box-sizing:border-box}
+body{margin:0;background:var(--mint);color:var(--ink);font-family:var(--d);padding:clamp(16px,4vw,40px) 16px}
+main{max-width:900px;margin:0 auto}
+h1{font-weight:800;font-size:clamp(2.4rem,9vw,4.4rem);line-height:.95;letter-spacing:-.03em;margin:0 0 8px}
+.sub{font-size:1.1rem;margin:0 0 20px}
+nav{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+nav button{font:700 .95rem var(--d);padding:8px 16px;border-radius:999px;border:2px solid var(--ink);background:var(--paper);color:var(--ink);cursor:pointer}
+nav button[aria-selected=true]{background:var(--ink);color:var(--paper)}
+.tool{display:none;background:var(--paper);border-radius:24px;padding:clamp(14px,3vw,24px);box-shadow:0 6px 0 var(--ink)}
+.tool.on{display:block}
+h2{margin:0 0 14px;font-size:1.5rem;letter-spacing:-.01em}
+textarea,input[type=text],input[type=search]{width:100%;font:400 .95rem/1.5 var(--m);color:var(--ink);background:var(--lilac);border:2px solid transparent;border-radius:12px;padding:12px}
+textarea{min-height:200px;resize:vertical}
+textarea:focus,input:focus{outline:none;border-color:var(--ink)}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0;align-items:center}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:640px){.two{grid-template-columns:1fr}}
+.b{font:800 1rem var(--d);border-radius:999px;padding:9px 18px;cursor:pointer;border:2px solid var(--ink);color:var(--ink);background:transparent}
+.b:hover{background:var(--ink);color:var(--paper)}
+.b.p{background:var(--orange)}.b.p:hover{background:#ff8c38;color:var(--ink)}
+:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
+.st{font-weight:600;min-height:1.5em}.st.e{color:var(--err)}
+.items{display:grid;gap:8px;margin-top:12px}
+.items button{all:unset;box-sizing:border-box;cursor:pointer;background:var(--lilac);border-radius:12px;padding:10px 14px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.items button:hover{background:var(--mint)}
+.items button:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
+.items b{font:700 .9rem var(--m)}
+#sw{height:90px;border-radius:16px;border:3px solid var(--ink);margin:12px 0}
+#pwd{font:700 1.2rem var(--m);background:var(--lilac);border-radius:12px;padding:16px;word-break:break-all;min-height:3.4rem}
+#clock{font:800 clamp(3.5rem,16vw,6rem) var(--d);letter-spacing:-.04em;text-align:center;margin:8px 0}
+mark{background:var(--orange);color:var(--ink);border-radius:3px}
+#r-out{font:400 .95rem/1.5 var(--m);background:var(--lilac);border-radius:12px;padding:12px;white-space:pre-wrap;word-break:break-word;min-height:4rem}
+.chips label{cursor:pointer}.chips input{position:absolute;opacity:0}
+.chips span{display:block;padding:7px 14px;border:2px solid var(--ink);border-radius:999px;font-weight:600}
+.chips input:checked+span{background:var(--ink);color:var(--paper)}
+.chips input:focus-visible+span{outline:3px solid var(--orange);outline-offset:2px}
+.fm{display:grid;grid-template-columns:1fr 1fr;gap:10px}.fm label{font-weight:600;display:block}.fm .w{grid-column:1/-1}
+@media(max-width:640px){.fm{grid-template-columns:1fr}}
+label.c{display:flex;gap:6px;align-items:center;font-weight:600}
+input[type=color]{width:56px;height:44px;border:2px solid var(--ink);border-radius:10px;padding:2px;background:var(--paper)}
+</style>
+</head>
+<body>
+<main>
+<h1>Dev Toolbox</h1>
+<p class="sub">Onze petits outils de dev dans une seule page. Tout tourne dans ton navigateur, rien n'est envoyé nulle part.</p>
+<nav role="tablist" id="nav"></nav>
+
+<section class="tool" id="json"><h2>JSON</h2>
+ <div class="two"><textarea id="j-in" placeholder='{"nom":"Alice","age":30}' aria-label="JSON à traiter" spellcheck="false"></textarea><textarea id="j-out" readonly aria-label="Résultat" spellcheck="false"></textarea></div>
+ <div class="row"><button class="b p" data-j="2">Formater</button><button class="b" data-j="0">Minifier</button><button class="b" data-copy="j-out">Copier</button></div>
+ <div class="st" id="j-st" role="status"></div></section>
+
+<section class="tool" id="color"><h2>Couleurs</h2>
+ <div class="row"><input type="text" id="c-in" value="#ff7a1a" aria-label="Couleur" style="flex:1" spellcheck="false"><input type="color" id="c-pick" value="#ff7a1a" aria-label="Sélecteur"></div>
+ <div class="st e" id="c-st" role="status"></div><div id="sw"></div><div class="items" id="c-res"></div></section>
+
+<section class="tool" id="pass"><h2>Mots de passe</h2>
+ <div id="pwd" aria-live="polite"></div>
+ <div class="row"><label class="c">Longueur <input type="range" id="p-len" min="8" max="64" value="20"> <b id="p-n">20</b></label></div>
+ <div class="row"><label class="c"><input type="checkbox" id="p-u" checked> Majuscules</label><label class="c"><input type="checkbox" id="p-l" checked> Minuscules</label><label class="c"><input type="checkbox" id="p-d" checked> Chiffres</label><label class="c"><input type="checkbox" id="p-s" checked> Symboles</label></div>
+ <div class="row"><button class="b p" id="p-gen">Générer</button><button class="b" id="p-copy">Copier</button><span class="st" id="p-st"></span></div></section>
+
+<section class="tool" id="enc"><h2>Encodage</h2>
+ <div class="two"><textarea id="e-in" placeholder="Texte ou valeur encodée" aria-label="Entrée" spellcheck="false"></textarea><textarea id="e-out" readonly aria-label="Résultat" spellcheck="false"></textarea></div>
+ <div class="row"><button class="b p" data-e="b64e">Base64 encoder</button><button class="b" data-e="b64d">Base64 décoder</button><button class="b" data-e="urle">URL encoder</button><button class="b" data-e="urld">URL décoder</button><button class="b" data-copy="e-out">Copier</button></div>
+ <div class="st e" id="e-st" role="status"></div></section>
+
+<section class="tool" id="git"><h2>Aide-mémoire Git</h2>
+ <input type="search" id="g-q" placeholder="ex : annuler, branche, push…" aria-label="Rechercher">
+ <div class="items" id="g-list"></div></section>
+
+<section class="tool" id="time"><h2>Minuteur Pomodoro</h2>
+ <div class="row"><button class="b p" data-m="25">Focus 25 min</button><button class="b" data-m="5">Pause 5 min</button><button class="b" data-m="15">Longue pause 15 min</button></div>
+ <div id="clock" aria-live="off">25:00</div>
+ <div class="row"><button class="b p" id="t-go">Démarrer</button><button class="b" id="t-reset">Réinitialiser</button></div></section>
+<section class="tool" id="hash"><h2>Hash</h2>
+ <textarea id="h-in" placeholder="Tape ou colle du texte" aria-label="Texte à hasher" spellcheck="false"></textarea>
+ <div class="items" id="h-res"></div></section>
+
+<section class="tool" id="rx"><h2>Testeur de regex</h2>
+ <div class="row"><input type="text" id="r-pat" placeholder="Motif, ex : [0-9]+" aria-label="Motif" style="flex:1;min-width:200px" spellcheck="false"><input type="text" id="r-fl" value="g" aria-label="Flags" style="width:90px" spellcheck="false"></div>
+ <textarea id="r-txt" aria-label="Texte de test" placeholder="Texte à tester : j'ai 3 chats et 12 poissons" spellcheck="false"></textarea>
+ <div class="st" id="r-st" role="status"></div><div id="r-out" aria-live="polite"></div></section>
+
+<section class="tool" id="ts"><h2>Temps & UUID</h2>
+ <div class="row"><input type="text" id="t-in" placeholder="Timestamp (1700000000) ou date (2026-10-02 14:30)" aria-label="Date ou timestamp" style="flex:1;min-width:220px" spellcheck="false"><button class="b p" id="t-now">Maintenant</button></div>
+ <div class="st e" id="t-st" role="status"></div><div class="items" id="t-res"></div>
+ <h2 style="margin-top:24px">UUID</h2><div class="row"><button class="b p" id="u-gen">Générer 5 UUID</button></div><div class="items" id="u-res"></div></section>
+
+<section class="tool" id="ign"><h2>Gitignore</h2>
+ <div class="row chips" id="i-chips"></div>
+ <textarea id="i-out" aria-label=".gitignore généré" spellcheck="false" placeholder="Coche au moins un environnement."></textarea>
+ <div class="row"><button class="b" data-copy="i-out">Copier</button><button class="b p" id="i-dl">Télécharger .gitignore</button></div></section>
+
+<section class="tool" id="rd"><h2>Générateur de README</h2>
+ <div class="fm">
+  <label>Nom du projet<input type="text" id="m-name" value="Mon super projet"></label>
+  <label>Pseudo GitHub<input type="text" id="m-user" value="pseudo"></label>
+  <label class="w">Description<input type="text" id="m-desc" value="Un outil qui fait gagner du temps à tout le monde."></label>
+  <label>Technologies (virgules)<input type="text" id="m-tech" value="JavaScript, HTML, CSS"></label>
+  <label>Licence<select id="m-lic" style="width:100%;font:400 .95rem var(--m);background:var(--lilac);border:0;border-radius:12px;padding:12px"><option>MIT</option><option>Apache-2.0</option><option>GPL-3.0</option><option value="">Aucune</option></select></label>
+  <label class="w">Installation<input type="text" id="m-inst" value="git clone https://github.com/pseudo/projet.git"></label>
+  <label class="w">Utilisation<input type="text" id="m-use" value="Ouvre index.html dans ton navigateur."></label>
+ </div>
+ <textarea id="m-out" style="margin-top:12px;min-height:300px" aria-label="README généré" spellcheck="false"></textarea>
+ <div class="row"><button class="b" data-copy="m-out">Copier</button><button class="b p" id="m-dl">Télécharger README.md</button></div></section>
+</main>
+
+<script>
+const $=id=>document.getElementById(id);
+async function copy(t,btn){const o=btn.textContent;try{await navigator.clipboard.writeText(t);btn.textContent="Copié !"}catch{btn.textContent="Copie impossible"}setTimeout(()=>btn.textContent=o,1300)}
+document.querySelectorAll("[data-copy]").forEach(b=>b.onclick=()=>copy($(b.dataset.copy).value,b));
+
+/* Onglets */
+const TABS=[["json","JSON"],["color","Couleurs"],["pass","Mots de passe"],["enc","Encodage"],["git","Git"],["time","Pomodoro"],["hash","Hash"],["rx","Regex"],["ts","Temps & UUID"],["ign","Gitignore"],["rd","README"]];
+function open(id){
+  if(!TABS.some(t=>t[0]===id))id="json";
+  TABS.forEach(([k])=>{$(k).classList.toggle("on",k===id);$("tab-"+k).setAttribute("aria-selected",k===id)});
+  history.replaceState(null,"","#"+id);
+}
+TABS.forEach(([k,n])=>{const b=document.createElement("button");b.id="tab-"+k;b.role="tab";b.textContent=n;b.onclick=()=>open(k);$("nav").append(b)});
+open(location.hash.slice(1));
+
+/* JSON */
+document.querySelectorAll("[data-j]").forEach(b=>b.onclick=()=>{
+  const s=$("j-st");
+  if(!$("j-in").value.trim()){s.className="st";s.textContent="Colle du JSON à gauche.";return}
+  try{$("j-out").value=JSON.stringify(JSON.parse($("j-in").value),null,+b.dataset.j);s.className="st";s.textContent="JSON valide ✓"}
+  catch(e){$("j-out").value="";s.className="st e";s.textContent="JSON invalide : "+e.message}
+});
+
+/* Couleurs */
+function rgbOf(s){const el=document.createElement("span");el.style.color=s;if(!el.style.color)return null;document.body.append(el);const m=getComputedStyle(el).color.match(/\d+/g);el.remove();return m.slice(0,3).map(Number)}
+function hslOf([r,g,b]){r/=255;g/=255;b/=255;const x=Math.max(r,g,b),n=Math.min(r,g,b),d=x-n,l=(x+n)/2;let h=0,s=0;if(d){s=d/(1-Math.abs(2*l-1));h=x===r?((g-b)/d)%6:x===g?(b-r)/d+2:(r-g)/d+4;h=(h*60+360)%360}return[Math.round(h),Math.round(s*100),Math.round(l*100)]}
+function color(v){
+  const rgb=rgbOf(v);if(!rgb){$("c-st").textContent="Couleur non reconnue (ex : #ff7a1a, rgb(255,122,26), tomato).";return}
+  $("c-st").textContent="";const hex="#"+rgb.map(n=>n.toString(16).padStart(2,"0")).join(""),[h,s,l]=hslOf(rgb);
+  $("sw").style.background=hex;$("c-pick").value=hex;$("c-res").innerHTML="";
+  [["HEX",hex],["RGB",`rgb(${rgb.join(", ")})`],["HSL",`hsl(${h}, ${s}%, ${l}%)`]].forEach(([k,t])=>{
+    const b=document.createElement("button"),a=document.createElement("span"),c=document.createElement("b");a.textContent=k;c.textContent=t;b.append(a,c);
+    b.onclick=()=>copy(t,a);$("c-res").append(b)});
+}
+$("c-in").oninput=e=>color(e.target.value);
+$("c-pick").oninput=e=>{$("c-in").value=e.target.value;color(e.target.value)};
+color("#ff7a1a");
+
+/* Mots de passe */
+const SETS={u:"ABCDEFGHIJKLMNOPQRSTUVWXYZ",l:"abcdefghijklmnopqrstuvwxyz",d:"0123456789",s:"!@#$%^&*()-_=+[]{};:,.?"};
+function gen(){
+  const on=["u","l","d","s"].filter(k=>$("p-"+k).checked),n=+$("p-len").value;$("p-n").textContent=n;
+  if(!on.length){$("pwd").textContent="";$("p-st").textContent="Coche au moins un type de caractères.";return}
+  const pool=on.map(k=>SETS[k]).join(""),buf=new Uint32Array(n);crypto.getRandomValues(buf);
+  const out=[...buf].map(x=>pool[x%pool.length]);
+  on.forEach((k,i)=>{const r=new Uint32Array(1);crypto.getRandomValues(r);out[i]=SETS[k][r[0]%SETS[k].length]}); /* au moins 1 de chaque type */
+  for(let i=out.length-1;i>0;i--){const r=new Uint32Array(1);crypto.getRandomValues(r);const j=r[0]%(i+1);[out[i],out[j]]=[out[j],out[i]]}
+  $("pwd").textContent=out.join("");
+  const bits=Math.round(n*Math.log2(pool.length));
+  $("p-st").textContent=bits+" bits d'entropie · "+(bits<60?"faible":bits<90?"correct":bits<120?"solide":"excellent");
+}
+["p-len","p-u","p-l","p-d","p-s"].forEach(i=>$(i).oninput=gen);
+$("p-gen").onclick=gen;$("p-copy").onclick=e=>copy($("pwd").textContent,e.target);gen();
+
+/* Encodage */
+const E={
+ b64e:s=>btoa(String.fromCharCode(...new TextEncoder().encode(s))),
+ b64d:s=>new TextDecoder().decode(Uint8Array.from(atob(s.trim()),c=>c.charCodeAt(0))),
+ urle:encodeURIComponent,urld:decodeURIComponent};
+document.querySelectorAll("[data-e]").forEach(b=>b.onclick=()=>{
+  try{$("e-out").value=E[b.dataset.e]($("e-in").value);$("e-st").textContent=""}
+  catch{$("e-out").value="";$("e-st").textContent="Entrée invalide pour cette opération."}
+});
+
+/* Git */
+const G=[["git init","Créer un dépôt"],["git clone <url>","Copier un dépôt GitHub"],["git status","Voir l'état des fichiers"],["git add .","Ajouter tous les changements"],["git commit -m \"message\"","Enregistrer les changements"],["git push","Envoyer tes commits"],["git pull","Récupérer les changements distants"],["git log --oneline","Historique en version courte"],["git diff","Voir ce qui a changé"],["git switch -c ma-branche","Créer une branche et y aller"],["git switch main","Revenir sur main"],["git merge ma-branche","Fusionner une branche"],["git restore fichier","Annuler les changements d'un fichier"],["git restore --staged fichier","Annuler un git add"],["git commit --amend","Modifier le dernier commit"],["git reset --soft HEAD~1","Annuler le dernier commit, garder les changements"],["git revert <hash>","Annuler un commit proprement"],["git stash","Mettre les changements de côté"],["git stash pop","Les récupérer"],["git remote add origin <url>","Relier ton dossier à GitHub"],["git push -u origin main","Premier push"],["git config --global user.name \"Nom\"","Définir ton nom"]];
+function git(){
+  const t=$("g-q").value.toLowerCase().trim(),r=G.filter(([c,d])=>(c+" "+d).toLowerCase().includes(t));
+  $("g-list").innerHTML=r.length?"":"<p>Aucune commande trouvée.</p>";
+  r.forEach(([c,d])=>{const b=document.createElement("button"),a=document.createElement("b"),s=document.createElement("span");a.textContent=c;s.textContent=d;b.append(a,s);
+    b.onclick=()=>copy(c,s);$("g-list").append(b)});
+}
+$("g-q").oninput=git;git();
+
+/* Pomodoro */
+let left=1500,timer=null;
+function draw(){const m=String(Math.floor(left/60)).padStart(2,"0"),s=String(left%60).padStart(2,"0");$("clock").textContent=m+":"+s;document.title=timer?`${m}:${s} · Dev Toolbox`:"Dev Toolbox"}
+function stop(){clearInterval(timer);timer=null;$("t-go").textContent="Démarrer"}
+function beep(){try{const a=new AudioContext(),o=a.createOscillator();o.connect(a.destination);o.frequency.value=660;o.start();setTimeout(()=>{o.stop();a.close()},400)}catch{}}
+$("t-go").onclick=()=>{
+  if(timer){stop();draw();return}
+  $("t-go").textContent="Pause";
+  timer=setInterval(()=>{left--;if(left<=0){left=0;stop();beep()}draw()},1000);
+};
+$("t-reset").onclick=()=>{stop();left=1500;draw()};
+document.querySelectorAll("[data-m]").forEach(b=>b.onclick=()=>{stop();left=+b.dataset.m*60;draw()});
+/* Helpers */
+function fill(id,rows){const el=$(id);el.innerHTML="";rows.forEach(([k,v])=>{const b=document.createElement("button"),a=document.createElement("span"),c=document.createElement("b");a.textContent=k;c.textContent=v;c.style.wordBreak="break-all";b.append(a,c);b.onclick=()=>copy(v,a);el.append(b)})}
+function save(name,text,type){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click();URL.revokeObjectURL(a.href)}
+const esc=t=>t.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+
+/* Hash */
+async function hash(){const b=new TextEncoder().encode($("h-in").value),rows=[];
+ for(const a of["SHA-1","SHA-256","SHA-512"])rows.push([a,[...new Uint8Array(await crypto.subtle.digest(a,b))].map(x=>x.toString(16).padStart(2,"0")).join("")]);
+ fill("h-res",rows)}
+$("h-in").oninput=hash;hash();
+
+/* Regex */
+function rx(){const s=$("r-st"),o=$("r-out"),p=$("r-pat").value;
+ if(!p){s.className="st";s.textContent="";o.innerHTML=esc($("r-txt").value);return}
+ try{let f=$("r-fl").value;if(!f.includes("g"))f+="g";const t=$("r-txt").value;let h="",l=0,n=0;
+  for(const m of t.matchAll(new RegExp(p,f))){if(!m[0])continue;h+=esc(t.slice(l,m.index))+"<mark>"+esc(m[0])+"</mark>";l=m.index+m[0].length;n++}
+  o.innerHTML=h+esc(t.slice(l));s.className="st";s.textContent=n+" correspondance"+(n>1?"s":"")}
+ catch(e){s.className="st e";s.textContent="Regex invalide : "+e.message}}
+["r-pat","r-fl","r-txt"].forEach(i=>$(i).oninput=rx);
+
+/* Temps & UUID */
+function ts(){const v=$("t-in").value.trim(),e=$("t-st");if(!v){$("t-res").innerHTML="";e.textContent="";return}
+ let d;if(/^-?\d+$/.test(v)){const n=+v;d=new Date(Math.abs(n)>=1e12?n:n*1000)}else d=new Date(v);
+ if(isNaN(d)){e.textContent="Date non reconnue. Essaie 1700000000 ou 2026-10-02 14:30.";$("t-res").innerHTML="";return}
+ e.textContent="";fill("t-res",[["Secondes",String(Math.floor(d/1000))],["Millisecondes",String(+d)],["ISO (UTC)",d.toISOString()],["Local",d.toLocaleString("fr-FR",{dateStyle:"full",timeStyle:"medium"})]])}
+$("t-in").oninput=ts;$("t-now").onclick=()=>{$("t-in").value=String(Math.floor(Date.now()/1000));ts()};
+$("u-gen").onclick=()=>fill("u-res",Array.from({length:5},(_,i)=>["#"+(i+1),crypto.randomUUID()]));
+
+/* Gitignore */
+const GI={"Node":"node_modules/\nnpm-debug.log*\ndist/\nbuild/\n.env","Python":"__pycache__/\n*.py[cod]\n.venv/\n*.egg-info/\n.env","Java":"*.class\n*.jar\ntarget/\n.gradle/","C / C++":"*.o\n*.exe\n*.out\n*.so\nbuild/","PHP":"vendor/\n.env\n*.log","VS Code":".vscode/","JetBrains":".idea/\n*.iml","macOS":".DS_Store","Windows":"Thumbs.db\nDesktop.ini","Linux":"*~\n.directory"};
+Object.keys(GI).forEach((k,i)=>{const l=document.createElement("label"),c=document.createElement("input"),sp=document.createElement("span");c.type="checkbox";c.value=k;sp.textContent=k;l.append(c,sp);c.onchange=ign;$("i-chips").append(l)});
+function ign(){const on=[...$("i-chips").querySelectorAll("input:checked")].map(i=>i.value);$("i-out").value=on.map(k=>"# "+k+"\n"+GI[k]).join("\n\n")+(on.length?"\n":"")}
+$("i-dl").onclick=()=>save(".gitignore",$("i-out").value,"text/plain");
+$("i-chips").querySelector("input").checked=true;ign();
+
+/* README */
+function rd(){const v=id=>$(id).value.trim(),t=v("m-tech").split(",").map(x=>x.trim()).filter(Boolean),L=v("m-lic");
+ const b=t.map(x=>`![${x}](https://img.shields.io/badge/-${encodeURIComponent(x.replace(/-/g,"--"))}-1c1f4a)`);if(L)b.push(`![Licence](https://img.shields.io/badge/licence-${encodeURIComponent(L.replace(/-/g,"--"))}-ff7a1a)`);
+ let m=`# ${v("m-name")}\n\n${v("m-desc")}\n\n`+(b.length?b.join(" ")+"\n\n":"");
+ if(v("m-inst"))m+="## Installation\n\n```bash\n"+v("m-inst")+"\n```\n\n";
+ if(v("m-use"))m+=`## Utilisation\n\n${v("m-use")}\n\n`;
+ m+="## Contribuer\n\n1. Fais un fork du projet\n2. Crée une branche (`git checkout -b ma-fonctionnalite`)\n3. Commite tes changements\n4. Ouvre une pull request\n\n";
+ if(L)m+=`## Licence\n\nDistribué sous licence ${L}.\n\n`;
+ if(v("m-user"))m+=`---\n\nFait par [@${v("m-user")}](https://github.com/${v("m-user")})\n`;
+ $("m-out").value=m}
+["m-name","m-user","m-desc","m-tech","m-lic","m-inst","m-use"].forEach(i=>$(i).oninput=rd);
+$("m-dl").onclick=()=>save("README.md",$("m-out").value,"text/markdown");rd();
+draw();
+</script>
+</body>
+</html>
